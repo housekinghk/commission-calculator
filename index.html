@@ -11,27 +11,18 @@
             --success: #10b981; --danger: #ef4444; --bg: #f8fafc;
             --card: #ffffff; --text-dark: #1e293b; --text-light: #64748b;
         }
-
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; touch-action: manipulation; }
-
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg); margin: 0; padding: 15px; color: var(--text-dark);
         }
-
         .container { max-width: 480px; margin: 0 auto; }
-        
         .header-section { text-align: center; margin: 15px 0 25px 0; }
         h1 { 
-            font-size: 1.6rem; 
-            font-weight: 800; 
-            background: var(--primary-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-            letter-spacing: -0.5px;
+            font-size: 1.6rem; font-weight: 800; background: var(--primary-grad);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: inline-block; letter-spacing: -0.5px;
         }
-
         .budget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .budget-card {
             background: white; padding: 12px; border-radius: 16px; text-align: center;
@@ -41,7 +32,6 @@
         .mg-border { border-color: var(--manager); }
         .card-label { font-size: 0.65rem; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
         .card-value { font-size: 1.15rem; font-weight: bold; }
-
         .main-card {
             background: var(--card); padding: 18px; border-radius: 20px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 15px;
@@ -53,21 +43,18 @@
             font-size: 16px; outline: none; -webkit-appearance: none; transition: 0.3s;
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
         .tag {
             padding: 8px 12px; font-size: 0.75rem; border-radius: 8px; margin-top: 6px;
             background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;
             display: flex; justify-content: space-between; align-items: center;
         }
         .tag.active { background: #dcfce7; color: #15803d; border-color: #bbf7d0; font-weight: bold; }
-
         .selected-history {
             margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px;
             border: 1px dashed #cbd5e0; display: none;
         }
         .history-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.75rem; color: #475569; }
         .btn-delete { color: var(--danger); background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
-
         .bonus-box {
             background: linear-gradient(135deg, #1e293b, #334155);
             color: white; padding: 20px; border-radius: 24px; margin-bottom: 15px;
@@ -81,12 +68,10 @@
         }
         .toggle-btn.active { background: white; color: #1e293b; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .breakdown-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-
         .btn-action {
             width: 100%; padding: 16px; background: white; border: 2px solid var(--primary);
             color: var(--primary); border-radius: 14px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-        
         #giftModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 100; align-items: flex-end;
@@ -103,10 +88,150 @@
     </style>
 </head>
 <body>
+<script>
+    // 🔐 內部授權檢查
+    (function() {
+        var _0x5f21=["\u6b64\u70ba\u5c45\u5c4b\u7687\u5167\u90e8\u7cfb\u7d71\uff0c\u8acb\u8f38\u5165\u6388\u6b0a\u78bc\uff1a","\x68\x6b\x38\x38\x38\x38","\u6388\u6b0a\u78bc\u932f\u8aa4\uff0c\u7121\x6cd5\u8a2a\u554f\u3002","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d"];
+        var input = prompt(_0x5f21[0]);
+        if (input !== _0x5f21[1]) {
+            alert(_0x5f21[2]);
+            window.location.href = _0x5f21[3];
+        }
+    })();
+</script>
 
 <div class="container">
     <div class="header-section">
         <h1>一鍵計算項目佣金及獎金</h1>
     </div>
+    <div class="budget-grid">
+        <div class="budget-card ds-border"><div class="card-label">設計師預算 (3.5%)</div><div id="dsBudget" class="card-value">$0</div></div>
+        <div class="budget-card mg-border"><div class="card-label">經理踢單預算 (1.5%)</div><div id="mgBudget" class="card-value">$0</div></div>
+    </div>
+    <div class="main-card">
+        <div class="field">
+            <label>合約總額 (HKD)</label>
+            <input type="number" id="baseAmount" placeholder="輸入合約總金額" pattern="[0-9]*">
+            <div class="threshold-mini">
+                <div id="t1" class="tag"><span>第三者意外保險</span><span id="t1-status">滿 $168,000 送出</span></div>
+                <div id="t2" class="tag"><span>完工後全屋清潔 一次 ($3,800)</span><span id="t2-status">滿 $268,000 送出</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="bonus-box">
+        <div class="total-payout" id="totalIncome">$0</div>
+        <div style="text-align: center; font-size: 0.8rem; margin-bottom: 15px; opacity: 0.8;">預計總收入 (僅供參考作用)</div>
+        <div class="selector-label">項目佣金比例：</div>
+        <div class="toggle-group" id="commGroup">
+            <button class="toggle-btn active" data-val="0.02">2%</button>
+            <button class="toggle-btn" data-val="0.025">2.5%</button>
+            <button class="toggle-btn" data-val="0.03">3%</button>
+            <button class="toggle-btn" data-val="0.05">5%</button>
+        </div>
+        <div class="selector-label">獎金分成條件：</div>
+        <div class="toggle-group" id="timingGroup">
+            <button class="toggle-btn active" data-val="0.5">準時及無賠償 (50%)</button>
+            <button class="toggle-btn" data-val="0.35">延遲及無賠償 (35%)</button>
+        </div>
+        <div class="breakdown-row"><span>基本項目佣金:</span><span id="resComm">$0</span></div>
+        <div class="breakdown-row"><span>贈品節省獎金:</span><span id="resBonus">$0</span></div>
+        <div id="deductionRow" class="breakdown-row" style="color: #ff8787; display: none;"><span>超支額外扣除:</span><span id="resDeduction">-$0</span></div>
+    </div>
+    <div class="main-card">
+        <div class="field">
+            <label>實際贈品總成本</label>
+            <input type="number" id="actualGift" placeholder="0" pattern="[0-9]*">
+            <div id="historyBox" class="selected-history"><div id="historyList"></div></div>
+        </div>
+    </div>
+    <button type="button" class="btn-action" id="openGiftBtn">🎁 選擇品牌贈品 (多選及數量)</button>
+</div>
 
-    <div class
+<div id="giftModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0">供應商贈品清單</h3>
+        <div id="giftContainer"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+            <div id="modalTotal" style="font-weight:bold; color:var(--primary)">合計: $0</div>
+            <button type="button" class="btn-action" id="confirmGiftBtn" style="width:auto; padding:10px 40px; background: var(--primary); color: white;">確認選擇</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let bonusRate = 0.5, commRate = 0.02, selectedItems = [];
+        const brandGifts = {
+            "Watsons Water": [{id:"w1",name:"WWS 98 RO 即熱冷熱水機",cost:2988},{id:"w2",name:"WWS 88 RO 即熱溫熱過濾水機",cost:2099},{id:"w3",name:"Watson's Caffè 全自動咖啡機",cost:2688},{id:"w4",name:"CF1 濾水器套裝",cost:938}],
+            "Philips": [{id:"p1",name:"AUT9028 RO冷熱淨水器",cost:7999},{id:"p2",name:"AUT7063 RO即熱淨水器",cost:6480},{id:"p3",name:"AUT7005 RO即熱淨水器",cost:4899},{id:"p4",name:"AUT4030 RO濾水器",cost:2699}],
+            "Lockly": [{id:"l1",name:"PGD829 Secure Lux 智能鎖",cost:3799},{id:"l2",name:"PGD898D Vision Lux+ 視像鎖",cost:5599},{id:"l3",name:"PGD899G Styla 視像鎖",cost:7599}],
+            "Serta": [{id:"s1",name:"$1,000床褥現金券",cost:800}],
+            "自選手動項目": [{id:"m1",name:"精選潔具系列",cost:0,manual:true},{id:"m2",name:"優質瓷磚項目",cost:0,manual:true}]
+        };
+        const baseInput = document.getElementById('baseAmount'), giftInput = document.getElementById('actualGift');
+        function calculate() {
+            const amount = parseFloat(baseInput.value) || 0, giftCost = parseFloat(giftInput.value) || 0;
+            let dsBudget = amount >= 200000 ? amount * 0.035 : 0, mgBudget = amount >= 200000 ? amount * 0.015 : 0;
+            document.getElementById('dsBudget').innerText = "$" + Math.floor(dsBudget).toLocaleString();
+            document.getElementById('mgBudget').innerText = "$" + Math.floor(mgBudget).toLocaleString();
+            const t1 = document.getElementById('t1'), t2 = document.getElementById('t2');
+            if(amount >= 168000){ t1.classList.add('active'); document.getElementById('t1-status').innerText = "✓ 已獲贈 ($"+Math.floor(amount*0.01).toLocaleString()+")"; } else { t1.classList.remove('active'); document.getElementById('t1-status').innerText = "滿 $168,000 送出"; }
+            if(amount >= 268000){ t2.classList.add('active'); document.getElementById('t2-status').innerText = "✓ 已獲贈 ($3,800)"; } else { t2.classList.remove('active'); document.getElementById('t2-status').innerText = "滿 $268,000 送出"; }
+            const baseComm = amount * commRate;
+            let giftBonus = (amount >= 200000 && giftCost < dsBudget) ? (dsBudget - giftCost) * bonusRate : 0;
+            let deduction = (amount >= 200000 && giftCost > (dsBudget + mgBudget)) ? giftCost - (dsBudget + mgBudget) : 0;
+            document.getElementById('totalIncome').innerText = "$" + Math.floor(Math.max(0, baseComm - deduction) + giftBonus).toLocaleString();
+            document.getElementById('resComm').innerText = "$" + Math.floor(baseComm).toLocaleString();
+            document.getElementById('resBonus').innerText = "$" + Math.floor(giftBonus).toLocaleString();
+            const dedRow = document.getElementById('deductionRow');
+            if(deduction > 0){ dedRow.style.display = 'flex'; document.getElementById('resDeduction').innerText = "-$" + Math.floor(deduction).toLocaleString(); } else { dedRow.style.display = 'none'; }
+        }
+        ['input','change','keyup'].forEach(evt => { baseInput.addEventListener(evt, calculate); giftInput.addEventListener(evt, calculate); });
+        document.querySelectorAll('.toggle-group button').forEach(btn => { btn.addEventListener('click', function(){ this.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active')); this.classList.add('active'); if(this.parentElement.id === 'commGroup') commRate = parseFloat(this.dataset.val); else bonusRate = parseFloat(this.dataset.val); calculate(); }); });
+        document.getElementById('openGiftBtn').addEventListener('click', function() {
+            const container = document.getElementById('giftContainer'); container.innerHTML = "";
+            for(let brand in brandGifts){
+                let html = `<div style="margin-top:15px; font-weight:bold; color:var(--primary); font-size:0.85rem; border-left: 3px solid var(--primary); padding-left: 8px;">${brand}</div>`;
+                brandGifts[brand].forEach(gift => {
+                    const saved = selectedItems.find(i => i.id === gift.id);
+                    html += `<div class="gift-row"><input type="checkbox" id="chk-${gift.id}" ${saved?'checked':''}> <div class="gift-info">${gift.name}<br>${gift.manual?`<input type="number" class="manual-input" id="price-${gift.id}" placeholder="金額" value="${saved?saved.cost:''}">`:`<b>$${gift.cost.toLocaleString()}</b>`}</div> ${!gift.manual?`<input type="number" class="qty-input" id="qty-${gift.id}" value="${saved?saved.qty:1}" min="1">`:''} </div>`;
+                });
+                container.innerHTML += html;
+            }
+            document.getElementById('giftModal').style.display = 'flex';
+            document.querySelectorAll('#giftModal input').forEach(input => { input.addEventListener('input', updateModalTotal); });
+        });
+        function updateModalTotal() {
+            let total = 0; document.querySelectorAll('#giftModal input[type="checkbox"]:checked').forEach(cb => {
+                const id = cb.id.replace('chk-', ''), qtyInput = document.getElementById('qty-' + id), manualInput = document.getElementById('price-' + id);
+                if(manualInput) total += parseFloat(manualInput.value) || 0;
+                else { const qty = parseInt(qtyInput.value) || 1; for(let b in brandGifts){ const item = brandGifts[b].find(i => i.id === id); if(item) total += (item.cost * qty); } }
+            });
+            document.getElementById('modalTotal').innerText = "合計: $" + Math.floor(total).toLocaleString();
+        }
+        document.getElementById('confirmGiftBtn').addEventListener('click', function() {
+            selectedItems = []; let total = 0; let historyHtml = "";
+            document.querySelectorAll('#giftModal input[type="checkbox"]:checked').forEach(cb => {
+                const id = cb.id.replace('chk-', ''), qtyInput = document.getElementById('qty-' + id), manualInput = document.getElementById('price-' + id);
+                for(let b in brandGifts){ const item = brandGifts[b].find(i => i.id === id); if(item){
+                    const itemQty = manualInput ? 1 : (parseInt(qtyInput.value) || 1), itemCost = manualInput ? (parseFloat(manualInput.value) || 0) : item.cost;
+                    selectedItems.push({ id: id, name: item.name, cost: itemCost, qty: itemQty });
+                    const lineCost = itemCost * itemQty; total += lineCost;
+                    historyHtml += `<div class="history-item"><span>${item.name}${itemQty>1 ? ' x'+itemQty : ''} ($${lineCost.toLocaleString()})</span><button type="button" class="btn-delete" data-id="${id}">✕</button></div>`;
+                    break;
+                }}
+            });
+            giftInput.value = total; document.getElementById('historyList').innerHTML = historyHtml; document.getElementById('historyBox').style.display = selectedItems.length > 0 ? 'block' : 'none';
+            document.querySelectorAll('.btn-delete').forEach(btn => { btn.addEventListener('click', function() {
+                const id = this.dataset.id; selectedItems = selectedItems.filter(i => i.id !== id);
+                let newTotal = 0; selectedItems.forEach(i => newTotal += (i.cost * i.qty)); giftInput.value = newTotal;
+                this.parentElement.remove(); if(selectedItems.length === 0) document.getElementById('historyBox').style.display = 'none';
+                calculate();
+            });});
+            calculate(); document.getElementById('giftModal').style.display = 'none';
+        });
+        calculate();
+    });
+</script>
+</body>
+</html>
